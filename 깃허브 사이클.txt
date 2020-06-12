@@ -1,4 +1,7 @@
-﻿* 로그인 계정 변경 및 자동로그인 설정
+ * 코드샌드박스 입장URL
+   - to2.kr/bqB
+ 
+ * 로그인 계정 변경 및 자동로그인 설정
   - git config -global credential.helper manger
   - git credntial-manager delete https://github.com
 
