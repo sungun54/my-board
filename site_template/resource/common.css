@@ -1,12 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>사이트</title>
-    <link href="../resource/common.css">  
-
-    <style>
 html {
 font-family: "Noto Sans KR", sans-serif;
 }
@@ -110,57 +101,3 @@ padding: 0 15px;
 .main-image > img {
 width: 100%;
 }
-
-    </style>
-
-</head>
-<body>
-  <nav class="top-menu-bar">
-    <div class="logo">
-      <img src="https://i.ibb.co/qJ9BPNj/123413245-1.png" alt="" />
-    </div>
-    <ul>
-      <li>
-        <a href="../home/index.html">홈</a>
-      </li>
-      <li>
-        <a href="#">게시판</a>
-        <ul>
-          <li>
-            <a href="../article/notice-list-1.html">공지사항</a>
-          </li>
-          <li>
-            <a href="../article/free-list-1.html">자유게시판</a>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="#">개발자 블로그</a>
-        <ul>
-          <li>
-            <a href="https://kys4871.tistory.com/" target="blank"
-              >김용순 블로그</a
-            >
-          </li>
-          <li>
-            <a href="https://dlqls12.tistory.com/" target="blank"
-              >이용빈 블로그</a
-            >
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="../stat/index.html">통계</a>
-      </li>
-    </ul>
-    <div class="login-bar">
-      <ul>
-        <li>
-          <a href="#"><span>회원가입</span></a>
-        </li>
-        <li>
-          <a href="#"><span>로그인</span></a>
-        </li>
-      </ul>
-    </div>
-  </nav>

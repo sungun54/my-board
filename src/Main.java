@@ -1,5 +1,3 @@
-
-// 화이팅!!
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -399,6 +397,7 @@ class ArticleController extends Controller {
 					break;
 				}
 				System.out.println(divideArticle.get(i).getTitle());
+				//생각해보니까 여기 양식에 맞춰서 리스트 출력해야함..
 			}
 		} else {
 			List<Article> searchArticle = new ArrayList<>();
@@ -561,7 +560,11 @@ class ArticleController extends Controller {
 		System.out.printf("제목 : %s%n", article.getTitle());
 		System.out.printf("내용 : %s%n", article.getBody());
 		System.out.printf("작성자 : %s%n", articleService.getMemberName(Integer.parseInt(request.getArg1())).getName());
+		System.out.printf("조회수 : %d%n", article.getHit());
 		System.out.println("==========================================================");
+		
+		article.setHit(article.getHit()+1);
+		articleService.modify(article);
 	}
 
 	private void actionModify(Request request) {
@@ -770,22 +773,24 @@ class MemberController extends Controller {
 // Service
 class BuildService {
 	ArticleService articleService;
+	MemberService memberService;
 
 	BuildService() {
 		articleService = Factory.getArticleService();
+		memberService = Factory.getMemberService();
 	}
 
 	public void buildSite() {
 		Util.makeDir("site");
 		Util.makeDir("site/article");
 		Util.makeDir("site/home");
+		Util.makeDir("site/stat");
 
 		String head = Util.getFileContents("site_template/part/head.html");
 		String foot = Util.getFileContents("site_template/part/foot.html");
 
 		// 각 게시판 별 게시물리스트 페이지 생성
 		List<Board> boards = articleService.articleListBoard();
-
 		for (Board board : boards) {
 			String fileName = board.getCode() + "-list-1.html";
 
@@ -833,17 +838,76 @@ class BuildService {
 			if (article.getId() != articles.size()) {
 				html += "<div><a href=\"" + (article.getId() + 1) + ".html\">다음글</a></div>";
 			}
-
 			html = head + html + foot;
 
 			Util.writeFileContents("site/article/" + article.getId() + ".html", html);
 		}
+		
+		//메인 홈페이지 생성
 		String html = "";
-
-		html += "<div class=\"main-image\"><img src=\"https://i.ibb.co/rsNyRWW/Untitled-123532456.png\"/></div><div><span>안녕하세요^^<br /></span><span>환영합니다</span></div>";
+		String template = Util.getFileContents("site_template/home/index.html");
+		html = template;
 		html = head + html + foot;
 
-		Util.writeFileContents("site/home/Main.html", html);
+		Util.writeFileContents("site/home/index.html", html);
+		
+		//통계 페이지 생성
+		//회원 수
+		//전체 게시물 수
+		//각 게시판별 게시물 수
+		//전체 게시물 조회 수
+		//각 게시판별 게시물 조회 수
+		List<Member> members = memberService.getMembers();
+		List<Article> freeArticles = articleService.getArticlesByBoardCode("free");
+		List<Article> noticeArticles = articleService.getArticlesByBoardCode("notice");
+		int allArticleHits = 0;
+		int noticeArticleHits = 0;
+		int freeArticleHits = 0;
+		for(Article article : articles) {
+			allArticleHits+=article.getHit();
+		}
+		for(Article article : freeArticles) {
+			freeArticleHits+=article.getHit();
+		}
+		for(Article article : noticeArticles) {
+			noticeArticleHits+=article.getHit();
+		}
+		html = "";
+		html += "<tr>";
+		html += "<th> 회원수 </th>";
+		html += "<td>" + members.size() + "</td>";
+		html += "</tr>";
+		html += "<tr>";
+		html += "<th> 전체 게시물 수 </th>";
+		html += "<td>" + articles.size() + "</td>";
+		html += "</tr>";
+		html += "<tr>";
+		html += "<th> 공지사항 게시판의 게시물 수 </th>";
+		html += "<td>" + noticeArticles.size() + "</td>";
+		html += "</tr>";
+		html += "<tr>";
+		html += "<th> 자유게시판의 게시물 수 </th>";
+		html += "<td>" + freeArticles.size() + "</td>";
+		html += "</tr>";
+		html += "<tr>";
+		html += "<th> 전체 게시물 조회수 </th>";
+		html += "<td>" + allArticleHits + "</td>";
+		html += "</tr>";
+		html += "<tr>";
+		html += "<th> 공지사항 조회수 </th>";
+		html += "<td>" + noticeArticleHits + "</td>";
+		html += "</tr>";
+		html += "<tr>";
+		html += "<th> 자유게시판 조회수 </th>";
+		html += "<td>" + freeArticleHits + "</td>";
+		html += "</tr>";
+		template = Util.getFileContents("site_template/stat/index.html");		
+		
+		html = template.replace("${TR}", html);		
+		
+		html = head + html + foot;
+		
+		Util.writeFileContents("site/stat/index.html", html);
 	}
 }
 
@@ -1300,11 +1364,11 @@ class Board extends Dto {
 class Article extends Dto {
 	private int boardId;
 	private int memberId;
+	private int hit;
 	private String title;
 	private String body;
 
 	public Article() {
-
 	}
 
 	public Article(int boardId, int memberId, String title, String body) {
@@ -1312,6 +1376,7 @@ class Article extends Dto {
 		this.memberId = memberId;
 		this.title = title;
 		this.body = body;
+		this.hit = 0;
 	}
 
 	public int getBoardId() {
@@ -1344,6 +1409,14 @@ class Article extends Dto {
 
 	public void setBody(String body) {
 		this.body = body;
+	}
+
+	public int getHit() {
+		return hit;
+	}
+
+	public void setHit(int hit) {
+		this.hit = hit;
 	}
 }
 
