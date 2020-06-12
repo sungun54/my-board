@@ -1,3 +1,4 @@
+
 // 화이팅!!
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -707,44 +708,44 @@ class MemberController extends Controller {
 		while (true) {
 			System.out.print("이름 : ");
 			name = Factory.getScanner().nextLine().trim();
-			if ( name.length() < 2 ) {
+			if (name.length() < 2) {
 				System.out.println("두 글자 이상 입력해주세요.");
 				continue;
 			}
 			break;
 		}
-		
-		while ( true ) {
+
+		while (true) {
 			System.out.print("아이디 : ");
 			loginId = Factory.getScanner().nextLine().trim();
-			if ( loginId.length() < 2 ) {
+			if (loginId.length() < 2) {
 				System.out.println("두 글자 이상 입력해주세요.");
 				continue;
 			}
 			List<Member> members = memberService.getMembers();
-			for(Member member : members)
-			if ( member.getLoginId().equals(loginId) ) {
-				System.out.println("입력하신 아이디가 이미 존재합니다.");
-				continue;
-			}
+			for (Member member : members)
+				if (member.getLoginId().equals(loginId)) {
+					System.out.println("입력하신 아이디가 이미 존재합니다.");
+					continue;
+				}
 			break;
 		}
-		
-		while ( true ) {
+
+		while (true) {
 			boolean loginPwValid = true;
-			while ( true ) {
+			while (true) {
 				System.out.print("비밀번호 : ");
 				loginPw = Factory.getScanner().nextLine().trim();
-				if ( loginPw.length() < 2 ) {
+				if (loginPw.length() < 2) {
 					System.out.println("두 글자 이상 입력해주세요.");
 					continue;
 				}
 				break;
 			}
-			while ( true ) {
+			while (true) {
 				System.out.print("비밀번호 확인 : ");
 				loginPwConfirm = Factory.getScanner().nextLine().trim();
-				if ( loginPwConfirm.length() < 2 ) {
+				if (loginPwConfirm.length() < 2) {
 					System.out.println("두 글자 이상 입력해주세요.");
 					continue;
 				}
@@ -755,12 +756,12 @@ class MemberController extends Controller {
 				}
 				break;
 			}
-			
-			if ( loginPwValid ) {
+
+			if (loginPwValid) {
 				break;
 			}
 		}
-		
+
 		memberService.join(loginId, loginPw, name);
 		System.out.println(name + "님 환영합니다.");
 	}
@@ -777,6 +778,7 @@ class BuildService {
 	public void buildSite() {
 		Util.makeDir("site");
 		Util.makeDir("site/article");
+		Util.makeDir("site/home");
 
 		String head = Util.getFileContents("site_template/part/head.html");
 		String foot = Util.getFileContents("site_template/part/foot.html");
@@ -790,13 +792,14 @@ class BuildService {
 			String html = "";
 
 			List<Article> articles = articleService.getArticlesByBoardCode(board.getCode());
-			if ( articles.size() == 0 ) {
+
+			if (articles.size() == 0) {
 				html += "<div>" + "게시물이 없습니다." + "</div>";
 				return;
 			}
-			
+
 			String template = Util.getFileContents("site_template/article/list.html");
-			
+
 			for (Article article : articles) {
 				html += "<tr>";
 				html += "<td>" + article.getId() + "</td>";
@@ -805,7 +808,7 @@ class BuildService {
 				html += "<td><a href=\"" + article.getId() + ".html\">" + article.getTitle() + "</a></td>";
 				html += "</tr>";
 			}
-			
+
 			html = template.replace("${TR}", html);
 
 			html = head + html + foot;
@@ -815,19 +818,19 @@ class BuildService {
 
 		// 게시물 별 파일 생성
 		List<Article> articles = articleService.getArticles();
-		
+
 		for (Article article : articles) {
-			
+
 			String html = "";
 
 			html += "<div>제목 : " + article.getTitle() + "</div>";
 			html += "<div>내용 : " + article.getBody() + "</div>";
-			
-			if ( article.getId() != 1 ) {
+
+			if (article.getId() != 1) {
 				html += "<div><a href=\"" + (article.getId() - 1) + ".html\">이전글</a></div>";
 			}
-			
-			if ( article.getId() != articles.size() ) {
+
+			if (article.getId() != articles.size()) {
 				html += "<div><a href=\"" + (article.getId() + 1) + ".html\">다음글</a></div>";
 			}
 
@@ -835,6 +838,12 @@ class BuildService {
 
 			Util.writeFileContents("site/article/" + article.getId() + ".html", html);
 		}
+		String html = "";
+
+		html += "<div class=\"main-image\"><img src=\"https://i.ibb.co/rsNyRWW/Untitled-123532456.png\"/></div><div><span>안녕하세요^^<br /></span><span>환영합니다</span></div>";
+		html = head + html + foot;
+
+		Util.writeFileContents("site/home/Main.html", html);
 	}
 }
 
@@ -850,6 +859,7 @@ class ArticleService {
 	public List<Article> getArticlesByBoardCode(String code) {
 		return articleDao.getArticlesByBoardCode(code);
 	}
+
 	public void deleteBoard(int id) {
 		articleDao.deleteBoard(id);
 	}
@@ -925,7 +935,7 @@ class MemberService {
 	public Member getMemberByLoginIdAndLoginPw(String loginId, String loginPw) {
 		return memberDao.getMemberByLoginIdAndLoginPw(loginId, loginPw);
 	}
-	
+
 	public List<Member> getMembers() {
 		return memberDao.getMembers();
 	}
