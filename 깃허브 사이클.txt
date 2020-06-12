@@ -16,7 +16,15 @@
   용순 
   
   로고-완
-  자바 통계 + 통계 페이지
+  자바 통계 + 통계 페이지 - 완
+  
+  자바 게시판 리스트에 나오는거 타이틀만 나오게 되있던데 그거 양식대로 나오게 고쳐야함.
+  free-list-1, notice-list-1 이것도 페이징 해야하는데 이건 내일 하겠음.
+  site_template/resource/common.css
+   공통 CSS
+   site_template/resource/common.js
+   공통 JS
+   이렇게 되있어서 한번 해볼려고 했는데 헤드에 적용이 안됨. 이부분은 보류 해두겠음.
   
   =============
   용빈 
