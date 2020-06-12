@@ -1,0 +1,10 @@
+﻿* 로그인 계정 변경 및 자동로그인 설정
+  - git config -global credential.helper manger
+  - git credntial-manager delete https://github.com
+
+* 작업 할 때 사이클
+  - git pull origin master => 충돌 나면 다시 커밋
+  - 작업
+  - git add
+  - git commit -m "커밋 메세지"
+  - git push origin master 
