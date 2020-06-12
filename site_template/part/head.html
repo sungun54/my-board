@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사이트</title>
+
+    <style>
+        html {
+  font-family: "Noto Sans KR", sans-serif;
+}
+table {
+  margin:50px;
+}
+body,
+ul,
+li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+* {
+  box-sizing: border-box;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
+.top-login-bar {
+  text-align: right;
+  position: relative;
+}
+.top-login-bar > ul {
+  display: inline-block;
+}
+.top-login-bar > ul > li {
+  display: inline-block;
+  margin: 0 -3px;
+}
+.top-login-bar > ul > li > a {
+  display: block;
+  font-size: 12px;
+  padding: 10px 20px;
+}
+.top-login-bar > .logo {
+  position: absolute;
+  left: 48%;
+  top: 5px;
+}
+.top-menu-bar {
+  text-align: center;
+  background-color: #dfdfdf;
+  position: relative;
+}
+.top-menu-bar > ul {
+  display: inline-block;
+}
+.top-menu-bar ul > li {
+  display: inline-block;
+  position: relative;
+}
+.top-menu-bar > ul > li {
+  margin: 0 -2px;
+}
+.top-menu-bar > ul > li:hover::before {
+  display: block;
+}
+
+.top-menu-bar > ul > li:first-child:hover::before {
+  display: none;
+}
+.top-menu-bar > ul > li::before {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  background-color: black;
+}
+.top-menu-bar > ul > li:last-child > a {
+  padding: 30px 80px;
+}
+
+.top-menu-bar ul > li:hover > ul {
+  display: block;
+}
+
+.top-menu-bar > ul ul {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #dfdfdf;
+}
+.top-menu-bar > ul ul > li:not(:first-child) {
+  width: 100%;
+  border-top: 1px solid black;
+}
+
+.top-menu-bar > ul > li > a {
+  font-size: 20px;
+  padding: 30px 43px;
+}
+.top-menu-bar ul > li > a {
+  display: block;
+}
+.top-menu-bar > ul > li > ul > li:hover {
+  width: 100%;
+  background-color: black;
+  color: white;
+}
+
+.top-menu-bar > ul > li > ul > li > a {
+  font-size: 13px;
+  padding: 10px 15px;
+  white-space: nowrap;
+}
+
+    </style>
+</head>
+<body>
+  <nav class="top-login-bar">
+    <div class="logo">로고</div>
+    <ul>
+      <li>
+        <a href="#"><span>회원가입</span></a>
+      </li>
+      <li>
+        <a href="#"><span>로그인</span></a>
+      </li>
+    </ul>
+  </nav>
+
+  <nav class="top-menu-bar">
+    <ul>
+      <li>
+        <a href="#">홈</a>
+      </li>
+      <li>
+        <a href="#">게시판</a>
+        <ul>
+          <li>
+            <a href="notice-list-1.html">공지사항</a>
+          </li>
+          <li>
+            <a href="free-list-1.html">자유게시판</a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="#">개발자 블로그</a>
+        <ul>
+          <li>
+            <a href="https://kys4871.tistory.com/" target="blank"
+              >김용순 블로그</a
+            >
+          </li>
+          <li>
+            <a href="https://dlqls12.tistory.com/" target="blank"
+              >이용빈 블로그</a
+            >
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="#">통계</a>
+      </li>
+    </ul>
+  </nav>
