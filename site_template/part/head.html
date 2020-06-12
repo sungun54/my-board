@@ -6,12 +6,10 @@
     <title>사이트</title>
 
     <style>
-        html {
+   html {
   font-family: "Noto Sans KR", sans-serif;
 }
-table {
-  margin:50px;
-}
+
 body,
 ul,
 li {
@@ -26,31 +24,15 @@ a {
   text-decoration: none;
   color: inherit;
 }
-.top-login-bar {
-  text-align: right;
-  position: relative;
-}
-.top-login-bar > ul {
-  display: inline-block;
-}
-.top-login-bar > ul > li {
-  display: inline-block;
-  margin: 0 -3px;
-}
-.top-login-bar > ul > li > a {
-  display: block;
-  font-size: 12px;
-  padding: 10px 20px;
-}
-.top-login-bar > .logo {
-  position: absolute;
-  left: 48%;
-  top: 5px;
-}
 .top-menu-bar {
   text-align: center;
   background-color: #dfdfdf;
   position: relative;
+}
+.top-menu-bar > .logo {
+  position: absolute;
+  left: 100px;
+  top: 35px;
 }
 .top-menu-bar > ul {
   display: inline-block;
@@ -66,9 +48,6 @@ a {
   display: block;
 }
 
-.top-menu-bar > ul > li:first-child:hover::before {
-  display: none;
-}
 .top-menu-bar > ul > li::before {
   content: "";
   position: absolute;
@@ -79,10 +58,6 @@ a {
   height: 3px;
   background-color: black;
 }
-.top-menu-bar > ul > li:last-child > a {
-  padding: 30px 80px;
-}
-
 .top-menu-bar ul > li:hover > ul {
   display: block;
 }
@@ -117,23 +92,25 @@ a {
   padding: 10px 15px;
   white-space: nowrap;
 }
-
+.top-menu-bar > .login-bar {
+  position: absolute;
+  top: 35px;
+  right: 40px;
+}
+.top-menu-bar > .login-bar > ul > li {
+  margin: 0 -3px;
+}
+.top-menu-bar > .login-bar > ul > li > a {
+  padding: 0 15px;
+}
+.main-image > img {
+  width: 100%;
+}
     </style>
 </head>
 <body>
-  <nav class="top-login-bar">
-    <div class="logo">로고</div>
-    <ul>
-      <li>
-        <a href="#"><span>회원가입</span></a>
-      </li>
-      <li>
-        <a href="#"><span>로그인</span></a>
-      </li>
-    </ul>
-  </nav>
-
   <nav class="top-menu-bar">
+    <div class="logo">로고</div>
     <ul>
       <li>
         <a href="#">홈</a>
@@ -168,4 +145,21 @@ a {
         <a href="#">통계</a>
       </li>
     </ul>
+    <div class="login-bar">
+      <ul>
+        <li>
+          <a href="#"><span>회원가입</span></a>
+        </li>
+        <li>
+          <a href="#"><span>로그인</span></a>
+        </li>
+      </ul>
+    </div>
   </nav>
+  <div class="main-image">
+    <img src="https://i.ibb.co/rsNyRWW/Untitled-123532456.png" alt="" />
+  </div>
+  <div>
+    <span>안녕하세요^^<br /></span>
+    <span>환영합니다</span>
+  </div>

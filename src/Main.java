@@ -1,3 +1,4 @@
+// 화이팅!!
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -277,7 +278,6 @@ class BuildController extends Controller {
 	@Override
 	void doAction(Request reqeust) {
 		if (reqeust.getActionName().equals("site")) {
-			System.out.println("sadfasdf");
 			actionSite(reqeust);
 		}
 	}
