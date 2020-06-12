@@ -8,3 +8,6 @@
   - git add
   - git commit -m "커밋 메세지"
   - git push origin master 
+  
+  == 주말 숙제 ==
+  용순? 로고 / 통계 페이지
