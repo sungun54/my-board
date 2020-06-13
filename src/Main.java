@@ -819,6 +819,7 @@ class BuildService {
 					html += "<td>" + articles.get(i).getRegDate() + "</td>";
 					html += "<td>" + articleService.getMemberName(articles.get(i).getMemberId()) + "</td>";
 					html += "<td><a href=\"" + articles.get(i).getId() + ".html\">" + articles.get(i).getTitle() + "</a></td>";
+					html += "<td>" + articles.get(i).getHit() + "</td>";
 					html += "</tr>";
 				}
 				
@@ -849,14 +850,40 @@ class BuildService {
 
 		// 게시물 별 파일 생성
 		List<Article> articles = articleService.getArticles();
-
 		for (Article article : articles) {
 
 			String html = "";
-
-			html += "<div>제목 : " + article.getTitle() + "</div>";
-			html += "<div>내용 : " + article.getBody() + "</div>";
-
+			
+			html = "";
+			html += "<tr>";
+			html += "<th> 번호 </th>";
+			html += "<td>" + article.getId() + "</td>";
+			html += "</tr>";
+			html += "<tr>";
+			html += "<th> 작성 날짜 </th>";
+			html += "<td>" + article.getRegDate()+ "</td>";
+			html += "</tr>";
+			html += "<tr>";
+			html += "<th> 작성자 </th>";
+			html += "<td>" + articleService.getMemberName(article.getMemberId()) + "</td>";
+			html += "</tr>";
+			html += "<tr>";
+			html += "<th> 제목 </th>";
+			html += "<td>" + article.getTitle() + "</td>";
+			html += "</tr>";
+			html += "<tr>";
+			html += "<th> 내용 </th>";
+			html += "<td>" + article.getBody() + "</td>";
+			html += "</tr>";
+			html += "<tr>";
+			html += "<th> 조회수 </th>";
+			html += "<td>" + article.getHit() + "</td>";
+			html += "</tr>";						
+			
+			String template = Util.getFileContents("site_template/article/detail.html");	
+			
+			html = template.replace("${TR}", html);		
+			
 			if (article.getId() != 1) {
 				html += "<div><a href=\"" + (article.getId() - 1) + ".html\">이전글</a></div>";
 			}
@@ -865,6 +892,7 @@ class BuildService {
 				html += "<div><a href=\"" + (article.getId() + 1) + ".html\">다음글</a></div>";
 			}
 			html += "<input type=\"button\" value=\"이전 페이지로 이동\" onClick=\"history.go(-1)\">";
+			
 			html = head + html + foot;
 
 			Util.writeFileContents("site/article/" + article.getId() + ".html", html);
