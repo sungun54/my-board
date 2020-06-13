@@ -368,7 +368,7 @@ class ArticleController extends Controller {
 			System.out.println("페이지를 입력해주세요.");
 			return;
 		}
-
+		System.out.println("==========================================================");
 		int paging = 5;
 		int page = Integer.parseInt(request.getArg1());
 		int currentBoardId = Factory.getSession().getCurrentBoard().getId();
@@ -396,8 +396,7 @@ class ArticleController extends Controller {
 				if (i == divideArticle.size()) {
 					break;
 				}
-				System.out.println(divideArticle.get(i).getTitle());
-				//생각해보니까 여기 양식에 맞춰서 리스트 출력해야함..
+					System.out.printf("No : %d, RegDate : %s, Title : %s, Writer : %s, Hit : %s%n", divideArticle.get(i).getId(), divideArticle.get(i).getRegDate(), divideArticle.get(i).getTitle(), articleService.getMemberName(divideArticle.get(i).getMemberId()), divideArticle.get(i).getHit());				
 			}
 		} else {
 			List<Article> searchArticle = new ArrayList<>();
@@ -426,6 +425,7 @@ class ArticleController extends Controller {
 				System.out.println(searchArticle.get(i).getTitle());
 			}
 		}
+		System.out.println("==========================================================");
 	}
 
 	private void actionDeleteBoard(Request request) {
@@ -559,7 +559,7 @@ class ArticleController extends Controller {
 		System.out.printf("날짜 : %s%n", article.getRegDate());
 		System.out.printf("제목 : %s%n", article.getTitle());
 		System.out.printf("내용 : %s%n", article.getBody());
-		System.out.printf("작성자 : %s%n", articleService.getMemberName(Integer.parseInt(request.getArg1())).getName());
+		System.out.printf("작성자 : %s%n", articleService.getMemberName(Integer.parseInt(request.getArg1())));
 		System.out.printf("조회수 : %d%n", article.getHit());
 		System.out.println("==========================================================");
 		
@@ -788,37 +788,63 @@ class BuildService {
 
 		String head = Util.getFileContents("site_template/part/head.html");
 		String foot = Util.getFileContents("site_template/part/foot.html");
-
+		int paging = 5;
 		// 각 게시판 별 게시물리스트 페이지 생성
 		List<Board> boards = articleService.articleListBoard();
 		for (Board board : boards) {
-			String fileName = board.getCode() + "-list-1.html";
+			int page = 1;
+			int i = 0;
+			double j = 0;
+			while(true) {				
+				
+				String fileName = board.getCode() + "-list-" + page + ".html";
+	
+				String html = "";
+	
+				List<Article> articles = articleService.getArticlesByBoardCode(board.getCode());
+				for(j = 0; true; j++) {
+					if(articles.size() == j) {
+						j = Math.ceil((double)articles.size() / (double)paging);
+						break;
+					}
+				}
+				String template = Util.getFileContents("site_template/article/list.html");
+				
+				for (i = paging*(page-1); i < paging*page; i++) {
+					if(articles.size() == i) {
+						break;
+					}
+					html += "<tr>";
+					html += "<td>" + articles.get(i).getId() + "</td>";
+					html += "<td>" + articles.get(i).getRegDate() + "</td>";
+					html += "<td>" + articleService.getMemberName(articles.get(i).getMemberId()) + "</td>";
+					html += "<td><a href=\"" + articles.get(i).getId() + ".html\">" + articles.get(i).getTitle() + "</a></td>";
+					html += "</tr>";
+				}
+				
+				html = template.replace("${TR}", html);
+				if (page != 1) {
+					html += "<div><a href=\"" + board.getCode() + "-list-" + (page-1) + ".html\">이전 리스트</a></div>";
+				}
 
-			String html = "";
-
-			List<Article> articles = articleService.getArticlesByBoardCode(board.getCode());
-
-			if (articles.size() == 0) {
-				html += "<div>" + "게시물이 없습니다." + "</div>";
-				return;
+				if (articles.size() != i) {
+					html += "<div><a href=\"" + board.getCode() + "-list-" + (page+1) + ".html\">다음 리스트</a></div>";
+				}
+				html = head + html + foot;
+				if (articles.size() == 0) {
+					html = "<div>" + "게시물이 없습니다." + "</div>";
+				}
+				
+				for(int k = 1; k <= j; k++) {
+					html += "<span><a href=\"" + board.getCode() + "-list-" + k + ".html\"> [ " + k + " ]</a></span>";
+				}
+				
+				Util.writeFileContents("site/article/" + fileName, html);
+				page++;
+				if(articles.size() == i) {
+					break;
+				}
 			}
-
-			String template = Util.getFileContents("site_template/article/list.html");
-
-			for (Article article : articles) {
-				html += "<tr>";
-				html += "<td>" + article.getId() + "</td>";
-				html += "<td>" + article.getRegDate() + "</td>";
-				html += "<td>" + articleService.getMemberName(article.getMemberId()).getName() + "</td>";
-				html += "<td><a href=\"" + article.getId() + ".html\">" + article.getTitle() + "</a></td>";
-				html += "</tr>";
-			}
-
-			html = template.replace("${TR}", html);
-
-			html = head + html + foot;
-
-			Util.writeFileContents("site/article/" + fileName, html);
 		}
 
 		// 게시물 별 파일 생성
@@ -838,6 +864,7 @@ class BuildService {
 			if (article.getId() != articles.size()) {
 				html += "<div><a href=\"" + (article.getId() + 1) + ".html\">다음글</a></div>";
 			}
+			html += "<input type=\"button\" value=\"이전 페이지로 이동\" onClick=\"history.go(-1)\">";
 			html = head + html + foot;
 
 			Util.writeFileContents("site/article/" + article.getId() + ".html", html);
@@ -936,7 +963,7 @@ class ArticleService {
 		articleDao.articleDelete(id);
 	}
 
-	public Member getMemberName(int id) {
+	public String getMemberName(int id) {
 		return memberService.getMember(id);
 	}
 
@@ -992,7 +1019,7 @@ class MemberService {
 		return memberDao.save(member);
 	}
 
-	public Member getMember(int id) {
+	public String getMember(int id) {
 		return memberDao.getMember(id);
 	}
 
@@ -1070,8 +1097,8 @@ class MemberDao {
 		return db.getMemberByLoginId(loginId);
 	}
 
-	public Member getMember(int id) {
-		return db.getMember(id);
+	public String getMember(int id) {
+		return db.getMember(id).getName();
 	}
 
 	public int save(Member member) {
@@ -1495,6 +1522,8 @@ class Member extends Dto {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+	
 }
 
 // Util
