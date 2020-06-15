@@ -1,3 +1,4 @@
+//2020 06 14 에 수정됨
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -132,7 +133,7 @@ class Factory {
 // App
 class App {
 	private Map<String, Controller> controllers;
-
+	boolean workStarted = false;
 	// 컨트롤러 만들고 한곳에 정리
 	// 나중에 컨트롤러 이름으로 쉽게 찾아쓸 수 있게 하려고 Map 사용
 	void initControllers() {
@@ -149,7 +150,7 @@ class App {
 		// 관리자 회원 생성
 		Factory.getMemberService().join("admin", "admin", "관리자");
 		// 공지사항 게시판 생성
-		Factory.getArticleService().makeBoard("공지시항", "notice");
+		Factory.getArticleService().makeBoard("공지사항", "notice");
 		Factory.getArticleService().makeBoard("자유게시판", "free");
 
 		// 현재 게시판을 1번 게시판으로 선택
@@ -158,8 +159,10 @@ class App {
 	}
 
 	public void start() {
-
+		
+		
 		while (true) {
+			startWork();
 			System.out.printf("명령어 : ");
 			String command = Factory.getScanner().nextLine().trim();
 
@@ -183,6 +186,20 @@ class App {
 		}
 
 		Factory.getScanner().close();
+	}
+	
+	public void startWork() {
+		workStarted = true;
+		new Thread(() -> {
+			while(workStarted) {
+				Factory.getBuildService().buildSite();
+				try {
+					Thread.sleep(10000);
+				}
+				catch ( InterruptedException e ) {
+				}
+			}
+		}).start();
 	}
 }
 
@@ -800,7 +817,7 @@ class BuildService {
 				String fileName = board.getCode() + "-list-" + page + ".html";
 	
 				String html = "";
-	
+				html += "<h1>" + board.getName() + "</h1>";
 				List<Article> articles = articleService.getArticlesByBoardCode(board.getCode());
 				for(j = 0; true; j++) {
 					if(articles.size() == j) {
@@ -808,38 +825,49 @@ class BuildService {
 						break;
 					}
 				}
-				String template = Util.getFileContents("site_template/article/list.html");
-				
-				for (i = paging*(page-1); i < paging*page; i++) {
-					if(articles.size() == i) {
-						break;
+				if ( articles.size() != 0 ) {
+					
+					String template = Util.getFileContents("site_template/article/list.html");
+					for (i = paging*(page-1); i < paging*page; i++) {
+						if(articles.size() == i) {
+							break;
+						}
+						html += "<tr>";
+						html += "<td>" + articles.get(i).getId() + "</td>";
+						html += "<td class=\"title\"><a href=\"" + articles.get(i).getId() + ".html\">" + articles.get(i).getTitle() + "</a></td>";
+						html += "<td>" + articleService.getMemberName(articles.get(i).getMemberId()) + "</td>";
+						html += "<td>" + articles.get(i).getRegDate() + "</td>";
+						html += "<td>" + articles.get(i).getHit() + "</td>";
+						html += "</tr>";
 					}
-					html += "<tr>";
-					html += "<td>" + articles.get(i).getId() + "</td>";
-					html += "<td>" + articles.get(i).getRegDate() + "</td>";
-					html += "<td>" + articleService.getMemberName(articles.get(i).getMemberId()) + "</td>";
-					html += "<td><a href=\"" + articles.get(i).getId() + ".html\">" + articles.get(i).getTitle() + "</a></td>";
-					html += "<td>" + articles.get(i).getHit() + "</td>";
-					html += "</tr>";
+					
+					html = template.replace("${TR}", html);
 				}
+//				if (page != 1) {
+//					html += "<div><a href=\"" + board.getCode() + "-list-" + (page-1) + ".html\">이전 리스트</a></div>";
+//				}
+//
+//				if (articles.size() != i) {
+//					html += "<div><a href=\"" + board.getCode() + "-list-" + (page+1) + ".html\">다음 리스트</a></div>";
+//				}
 				
-				html = template.replace("${TR}", html);
-				if (page != 1) {
-					html += "<div><a href=\"" + board.getCode() + "-list-" + (page-1) + ".html\">이전 리스트</a></div>";
+				String x = "";
+				List<Board> boards2 = articleService.articleListBoard();
+				for ( Board board2 : boards2 ) {
+					x += "<li><a href=\"../article/" + board2.getCode() + "-list-1.html\">" + board2.getName() + "</a></li>";
 				}
-
-				if (articles.size() != i) {
-					html += "<div><a href=\"" + board.getCode() + "-list-" + (page+1) + ".html\">다음 리스트</a></div>";
-				}
-				html = head + html + foot;
+				head = head.replace("{$QQ}", x);
+				
+				html = head + html;
 				if (articles.size() == 0) {
-					html = "<div>" + "게시물이 없습니다." + "</div>";
+					html += "<h2>" + "게시물이 없습니다." + "</h2>";
 				}
-				
+				html += "<div class=\"page\">";
 				for(int k = 1; k <= j; k++) {
 					html += "<span><a href=\"" + board.getCode() + "-list-" + k + ".html\"> [ " + k + " ]</a></span>";
 				}
-				
+				html += "</div>";
+				html += foot;
 				Util.writeFileContents("site/article/" + fileName, html);
 				page++;
 				if(articles.size() == i) {
@@ -860,20 +888,20 @@ class BuildService {
 			html += "<td>" + article.getId() + "</td>";
 			html += "</tr>";
 			html += "<tr>";
-			html += "<th> 작성 날짜 </th>";
-			html += "<td>" + article.getRegDate()+ "</td>";
-			html += "</tr>";
-			html += "<tr>";
-			html += "<th> 작성자 </th>";
-			html += "<td>" + articleService.getMemberName(article.getMemberId()) + "</td>";
-			html += "</tr>";
-			html += "<tr>";
 			html += "<th> 제목 </th>";
 			html += "<td>" + article.getTitle() + "</td>";
 			html += "</tr>";
 			html += "<tr>";
 			html += "<th> 내용 </th>";
 			html += "<td>" + article.getBody() + "</td>";
+			html += "</tr>";
+			html += "<tr>";
+			html += "<th> 작성자 </th>";
+			html += "<td>" + articleService.getMemberName(article.getMemberId()) + "</td>";
+			html += "</tr>";
+			html += "<tr>";
+			html += "<th> 작성 날짜 </th>";
+			html += "<td>" + article.getRegDate()+ "</td>";
 			html += "</tr>";
 			html += "<tr>";
 			html += "<th> 조회수 </th>";
@@ -883,16 +911,15 @@ class BuildService {
 			String template = Util.getFileContents("site_template/article/detail.html");	
 			
 			html = template.replace("${TR}", html);		
-			
+			html += "<div class=\"list\">";
 			if (article.getId() != 1) {
-				html += "<div><a href=\"" + (article.getId() - 1) + ".html\">이전글</a></div>";
+				html += "<span><a href=\"" + (article.getId() - 1) + ".html\">이전글</a></span>";
 			}
-
 			if (article.getId() != articles.size()) {
-				html += "<div><a href=\"" + (article.getId() + 1) + ".html\">다음글</a></div>";
+				html += "<span><a href=\"" + (article.getId() + 1) + ".html\">다음글</a></span>";
 			}
-			html += "<input type=\"button\" value=\"이전 페이지로 이동\" onClick=\"history.go(-1)\">";
-			
+			html += "<div><input type=\"button\" value=\"글 목록으로 이동\" onclick=\"location.href='notice-list-1.html'\"></div>";
+			html += "</div>";
 			html = head + html + foot;
 
 			Util.writeFileContents("site/article/" + article.getId() + ".html", html);

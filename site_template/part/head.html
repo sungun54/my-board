@@ -4,12 +4,87 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>사이트</title>
-    <link href="../resource/common.css">  
+    <link href="../resource/common.css">
 
     <style>
 html {
 font-family: "Noto Sans KR", sans-serif;
 }
+
+h1 {
+  text-align: center;
+}
+
+h2 {
+  text-align: center;
+}
+section{
+  margin : 30px;
+}
+section{
+  text-align: center;
+}
+section > table{
+  display: inline-block;
+}
+
+section > table > tbody > tr > td{
+  padding : 10px 100px;
+}
+
+.list {
+  text-align: center;
+}
+
+.list > span{
+  display: inline-block;
+}
+.list > span > a{
+  display : block;
+  padding : 10px;
+}
+
+.page {
+  text-align: center;
+}
+
+.page > span {
+  display: inline-block;
+}
+
+.article-list {
+  margin: auto;
+    width: 65%;
+    border-collapse: collapse;
+  }
+  .article-list > tbody .title{
+    padding : 10px 250px;
+  }
+.article-list > tbody .title:hover{
+  color:blueviolet;
+}
+.article-list > thead > tr > th {
+    font-weight: bold;
+    vertical-align: top;
+    color: rgb(18, 82, 155);
+    border-bottom: 3px solid black;
+  }
+
+  .article-list > tbody > tr > td:first-child {
+    background-color:#dfdfdf;
+    font-weight: bold;
+  }
+  th, td {
+    text-align: center;
+    border-bottom: 1px solid black;
+    padding: 10px;
+  }
+  .page > span{
+    margin : 10px;
+  }
+  .page > span:hover{
+    font-weight:  bold;
+  }
 
 body,
 ul,
@@ -35,7 +110,7 @@ position: absolute;
 left: 0;
 top: 30px;
 }
-.top-menu-bar > .logo > img {
+.top-menu-bar > .logo > a > img {
 width: 30%;
 }
 .top-menu-bar > ul {
@@ -117,7 +192,7 @@ width: 100%;
 <body>
   <nav class="top-menu-bar">
     <div class="logo">
-      <img src="https://i.ibb.co/qJ9BPNj/123413245-1.png" alt="" />
+      <a href="../home/index.html"><img src="https://i.ibb.co/qJ9BPNj/123413245-1.png" alt="" /></a>
     </div>
     <ul>
       <li>
@@ -126,12 +201,13 @@ width: 100%;
       <li>
         <a href="#">게시판</a>
         <ul>
-          <li>
+          <!-- <li>
             <a href="../article/notice-list-1.html">공지사항</a>
           </li>
           <li>
             <a href="../article/free-list-1.html">자유게시판</a>
-          </li>
+          </li> -->
+          {$QQ}
         </ul>
       </li>
       <li>
