@@ -36,7 +36,7 @@ public class ArticleService {
 	}
 
 	public String getMemberName(int id) {
-		return memberService.getMember(id);
+		return memberService.getMemberName(id);
 	}
 
 	public int modify(Article article) {

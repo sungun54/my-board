@@ -258,7 +258,7 @@ public class ArticleController extends Controller {
 		}
 
 		int removedArticleId = articleService.articledelete(Integer.parseInt(request.getArg1()));
-		System.out.println(removedArticleId + "번 게시물이 삭제 되었습니다.");
+		System.out.println(request.getArg1() + "번 게시물이 삭제 되었습니다.");
 	}
 
 	private void actionDetail(Request request) {
@@ -279,7 +279,7 @@ public class ArticleController extends Controller {
 		System.out.printf("날짜 : %s%n", article.getRegDate());
 		System.out.printf("제목 : %s%n", article.getTitle());
 		System.out.printf("내용 : %s%n", article.getBody());
-		System.out.printf("작성자 : %s%n", articleService.getMemberName(Integer.parseInt(request.getArg1())));
+		System.out.printf("작성자 : %s%n", articleService.getMemberName(article.getMemberId()));
 		System.out.printf("조회수 : %d%n", article.getHit());
 		System.out.println("==========================================================");
 		

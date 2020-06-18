@@ -23,8 +23,8 @@ public class MemberService {
 		return memberDao.save(member);
 	}
 
-	public String getMember(int id) {
-		return memberDao.getMember(id);
+	public String getMemberName(int id) {
+		return memberDao.getMemberName(id);
 	}
 
 	public Member getMemberByLoginIdAndLoginPw(String loginId, String loginPw) {

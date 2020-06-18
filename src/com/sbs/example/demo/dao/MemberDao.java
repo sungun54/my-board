@@ -14,7 +14,12 @@ public class MemberDao {
 	}	
 	
 	public List<Member> getMembers() {
-		List<Map<String, Object>> rows = dbConn.selectRows("SELECT * FROM `Member` ORDER by id DESC");
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.format("SELECT * "));
+		sb.append(String.format("FROM `member` "));
+		sb.append(String.format("ORDER by id DESC"));
+		//String sql = "SELECT * FROM `Member` ORDER by id DESC"
+		List<Map<String, Object>> rows = dbConn.selectRows(sb.toString());
 		List<Member> members = new ArrayList<>();
 
 		for (Map<String, Object> row : rows) {
@@ -25,7 +30,12 @@ public class MemberDao {
 	}
 
 	public Member getMemberByLoginId(String loginId) {
-		Map<String, Object> row = dbConn.selectRow("SELECT * FROM `Member` WHERE loginId = '" + loginId + "'");
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.format("SELECT * "));
+		sb.append(String.format("FROM `member` "));
+		sb.append(String.format(" WHERE loginId = '%s'", loginId));		
+		//String sql ="SELECT * FROM `Member` WHERE loginId = '" + loginId + "'";
+		Map<String, Object> row = dbConn.selectRow(sb.toString());
 		if(row.isEmpty()) {
 			Member member = null;
 			return member;
@@ -34,8 +44,13 @@ public class MemberDao {
 		return member;		
 	}
 
-	public String getMember(int id) {		
-		Map<String, Object> row = dbConn.selectRow("SELECT * FROM `Member` WHERE id = " + id);
+	public String getMemberName(int id) {	
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.format("SELECT * "));
+		sb.append(String.format("FROM `member` "));
+		sb.append(String.format(" WHERE id = %d", id));	
+		//String sql = "SELECT * FROM `Member` WHERE id = " + id;
+		Map<String, Object> row = dbConn.selectRow(sb.toString());
 		if(row.isEmpty()) {
 			return null;
 		}
@@ -44,17 +59,28 @@ public class MemberDao {
 	}
 
 	public int save(Member member) {
-		String sql = "";
-		sql += "INSERT INTO Member ";
-		sql += String.format("SET regDate = '%s'", member.getRegDate());
-		sql += String.format(", loginPw = '%s'", member.getLoginId());
-		sql += String.format(", loginId = '%s'", member.getLoginPw());
-		sql += String.format(", `name` = '%s'", member.getName());	
-		return dbConn.insert(sql);
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.format("INSERT INTO `Member` "));
+		sb.append(String.format("SET regDate = '%s'", member.getRegDate()));
+		sb.append(String.format(", loginPw = '%s'", member.getLoginId()));
+		sb.append(String.format(", loginId = '%s'", member.getLoginPw()));	
+		sb.append(String.format(", `name` = '%s'", member.getName()));	
+//		String sql = "";
+//		sql += "INSERT INTO Member ";
+//		sql += String.format("SET regDate = '%s'", member.getRegDate());
+//		sql += String.format(", loginPw = '%s'", member.getLoginId());
+//		sql += String.format(", loginId = '%s'", member.getLoginPw());
+//		sql += String.format(", `name` = '%s'", member.getName());	
+		return dbConn.insert(sb.toString());
 	}
 
 	public Member getMemberByLoginIdAndLoginPw(String loginId, String loginPw) {
-		Map<String, Object> row = dbConn.selectRow("SELECT * FROM `Member` WHERE loginId = '" + loginId + "' AND loginPw = '" + loginPw + "'");
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.format("SELECT * FROM `Member` "));
+		sb.append(String.format("WHERE loginId = '%s' ", loginId));
+		sb.append(String.format("AND loginPw = '%s'", loginPw));
+		//String sql = "SELECT * FROM `Member` WHERE loginId = '" + loginId + "' AND loginPw = '" + loginPw + "'";
+		Map<String, Object> row = dbConn.selectRow(sb.toString());
 		if(row.isEmpty()) {
 			Member member = null;
 			return member;

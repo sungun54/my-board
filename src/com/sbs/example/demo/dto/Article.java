@@ -20,14 +20,12 @@ public class Article extends Dto {
 	}
 
 	public Article(Map<String, Object> row) {
-		this.setId((int) (long) row.get("id"));
-		String regDate = row.get("regDate") + "";
-		this.setRegDate(regDate);
-		this.setHit((int)(long) row.get("hit"));
+		super((int)row.get("id"), (String)row.get("regDate"));
+		this.setHit((int)row.get("hit"));
 		this.setTitle((String) row.get("title"));
 		this.setBody((String) row.get("body"));
-		this.setMemberId((int) (long) row.get("memberId"));
-		this.setBoardId((int) (long) row.get("boardId"));
+		this.setMemberId((int)row.get("memberId"));
+		this.setBoardId((int)row.get("boardId"));
 	}
 
 	public int getBoardId() {
