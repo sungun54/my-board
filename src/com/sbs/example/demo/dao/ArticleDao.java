@@ -1,30 +1,32 @@
 package com.sbs.example.demo.dao;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.sbs.example.demo.db.DBConnection;
 import com.sbs.example.demo.dto.Article;
+import com.sbs.example.demo.dto.ArticleReply;
 import com.sbs.example.demo.dto.Board;
 import com.sbs.example.demo.factory.Factory;
 
 // Dao
 public class ArticleDao {
 	DBConnection dbConn;
+
 	public ArticleDao() {
 		dbConn = Factory.getDBConnection();
-	}	
-	
-	
+	}
+
 	public void modifyHit(Article article) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(String.format("UPDATE Article "));
 		sb.append(String.format("SET hit = %d", article.getHit()));
 		sb.append(String.format(" WHERE id = %d", article.getId()));
-		//String sql = "UPDATE Article SET hit = " + article.getHit() + " WHERE id = " + article.getId();
+		// String sql = "UPDATE Article SET hit = " + article.getHit() + " WHERE id = "
+		// + article.getId();
 		dbConn.update(sb.toString());
 	}
-
 
 	public int modify(Article article) {
 		StringBuilder sb = new StringBuilder();
@@ -32,22 +34,22 @@ public class ArticleDao {
 		sb.append(String.format("SET title = '%s'", article.getTitle()));
 		sb.append(String.format(", `body` = '%s'", article.getBody()));
 		sb.append(String.format(" WHERE id = %d", article.getId()));
-		//String sql = "UPDATE Article SET title = '" + article.getTitle() + "', `body` = '" + article.getBody() + "' WHERE id = " + article.getId();
-		return dbConn.update(sb.toString());	
+		// String sql = "UPDATE Article SET title = '" + article.getTitle() + "', `body`
+		// = '" + article.getBody() + "' WHERE id = " + article.getId();
+		return dbConn.update(sb.toString());
 	}
 
-
-	public List<Article> getArticlesByBoardCode(String code) {		
+	public List<Article> getArticlesByBoardCode(String code) {
 		StringBuilder boardSb = new StringBuilder();
 		boardSb.append(String.format("SELECT id "));
 		boardSb.append(String.format("FROM Board "));
-		boardSb.append(String.format("WHERE `code` = '%s'", code));		
-		//String boardSql = "SELECT id FROM Board WHERE `code` = '" + code + "'";
+		boardSb.append(String.format("WHERE `code` = '%s'", code));
+		// String boardSql = "SELECT id FROM Board WHERE `code` = '" + code + "'";
 		StringBuilder articleSb = new StringBuilder();
 		boardSb.append(String.format("SELECT id "));
 		boardSb.append(String.format("FROM Article "));
-		boardSb.append(String.format("ORDER by id DESC"));	
-		//String articleSql = "SELECT id FROM Board WHERE `code` = '" + code + "'";
+		boardSb.append(String.format("ORDER by id DESC"));
+		// String articleSql = "SELECT id FROM Board WHERE `code` = '" + code + "'";
 		List<Map<String, Object>> boardRows = dbConn.selectRows(boardSb.toString());
 		List<Map<String, Object>> articleRows = dbConn.selectRows(articleSb.toString());
 		List<Article> articles = new ArrayList<>();
@@ -57,21 +59,21 @@ public class ArticleDao {
 //				articles.add(new Article(row));
 //			}
 //		}
-		for(Map<String, Object> boardRow : boardRows) {
+		for (Map<String, Object> boardRow : boardRows) {
 			for (Map<String, Object> articleRow : articleRows) {
-				if(boardRow.get("id") == articleRow.get("boardId"))
-				articles.add(new Article(articleRow));
+				if (boardRow.get("id") == articleRow.get("boardId"))
+					articles.add(new Article(articleRow));
 			}
 		}
 		return articles;
-		
+
 	}
 
 	public int deleteBoard(int id) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(String.format("DELETE FROM Board "));
 		sb.append(String.format("WHERE id = '%d'", id));
-		//String sql = "DELETE FROM Board WHERE id = " + id;
+		// String sql = "DELETE FROM Board WHERE id = " + id;
 		return dbConn.deleteRow(sb.toString());
 	}
 
@@ -79,15 +81,15 @@ public class ArticleDao {
 		StringBuilder sb = new StringBuilder();
 		sb.append(String.format("SELECT * "));
 		sb.append(String.format("FROM Board "));
-		sb.append(String.format("ORDER by id DESC"));	
-		//String sql = "SELECT * FROM Board ORDER by id DESC";
+		sb.append(String.format("ORDER by id DESC"));
+		// String sql = "SELECT * FROM Board ORDER by id DESC";
 		List<Map<String, Object>> rows = dbConn.selectRows(sb.toString());
 		List<Board> Boards = new ArrayList<>();
 
 		for (Map<String, Object> row : rows) {
 			Boards.add(new Board(row));
 		}
-		
+
 		return Boards;
 	}
 
@@ -95,26 +97,26 @@ public class ArticleDao {
 		StringBuilder sb = new StringBuilder();
 		sb.append(String.format("DELETE FROM Article "));
 		sb.append(String.format("WHERE id = '%d'", id));
-		//String sql = "DELETE FROM Article WHERE id = " + id;
+		// String sql = "DELETE FROM Article WHERE id = " + id;
 		return dbConn.deleteRow(sb.toString());
 	}
 
-	public Article getArticle(int id) {		
+	public Article getArticle(int id) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(String.format("SELECT * "));
 		sb.append(String.format("FROM Article "));
 		sb.append(String.format("WHERE id = '%d'", id));
-		//String sql = "SELECT * FROM Article WHERE id = " + id";
+		// String sql = "SELECT * FROM Article WHERE id = " + id";
 		Map<String, Object> row = dbConn.selectRow(sb.toString());
 //		if(row.get("title") == null) {
 //			Article article = null;
 //			return article;
 //		}
-		if(row.isEmpty()) {
+		if (row.isEmpty()) {
 			Article article = null;
 			return article;
 		}
-		
+
 		Article article = new Article(row);
 		return article;
 	}
@@ -124,19 +126,19 @@ public class ArticleDao {
 		sb.append(String.format("SELECT * "));
 		sb.append(String.format("FROM Board "));
 		sb.append(String.format("WHERE `code` = '%s'", code));
-		//String sql = "SELECT * FROM Board WHERE `code` = '" + code + "'";
+		// String sql = "SELECT * FROM Board WHERE `code` = '" + code + "'";
 		Map<String, Object> row = dbConn.selectRow(sb.toString());
 //		if(row.get("name") == null) {
 //			Board board = null;
 //			return board;
 //		}
-		if(row.isEmpty()) {
+		if (row.isEmpty()) {
 			Board board = null;
 			return board;
 		}
 		Board board = new Board(row);
 		return board;
-		//return db.getBoardByCode(code);
+		// return db.getBoardByCode(code);
 	}
 
 	public int saveBoard(Board board) {
@@ -159,9 +161,9 @@ public class ArticleDao {
 		sb.append(String.format("SET regDate = '%s'", article.getRegDate()));
 		sb.append(String.format(", title = '%s'", article.getTitle()));
 		sb.append(String.format(", hit = '%s'", article.getHit()));
-		sb.append(String.format(", `body` = '%s'", article.getBody()));		
-		sb.append(String.format(", memberId = '%d'", article.getMemberId()));			
-		sb.append(String.format(", boardId = '%d'", article.getBoardId()));		
+		sb.append(String.format(", `body` = '%s'", article.getBody()));
+		sb.append(String.format(", memberId = '%d'", article.getMemberId()));
+		sb.append(String.format(", boardId = '%d'", article.getBoardId()));
 //		String sql = "";
 //		sql += "INSERT INTO Article ";
 //		sql += String.format("SET regDate = '%s'", article.getRegDate());
@@ -178,9 +180,9 @@ public class ArticleDao {
 		sb.append(String.format("SELECT * "));
 		sb.append(String.format("FROM Board "));
 		sb.append(String.format("WHERE id = %d", id));
-		//String sql = "SELECT * FROM Board WHERE id = " + id;
+		// String sql = "SELECT * FROM Board WHERE id = " + id;
 		Map<String, Object> row = dbConn.selectRow(sb.toString());
-		if(row.isEmpty()) {
+		if (row.isEmpty()) {
 			return null;
 		}
 		Board board = new Board(row);
@@ -192,7 +194,7 @@ public class ArticleDao {
 		sb.append(String.format("SELECT * "));
 		sb.append(String.format("FROM Article "));
 		sb.append(String.format("ORDER by id DESC"));
-		//String sql = "SELECT * FROM Article ORDER by id DESC";
+		// String sql = "SELECT * FROM Article ORDER by id DESC";
 		List<Map<String, Object>> rows = dbConn.selectRows(sb.toString());
 		List<Article> articles = new ArrayList<>();
 
@@ -203,4 +205,59 @@ public class ArticleDao {
 		return articles;
 	}
 
+	public void saveArticleReply(ArticleReply articleReply) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.format("INSERT INTO ArticleReply "));
+		sb.append(String.format("SET regDate = '%s'", articleReply.getRegDate()));
+		sb.append(String.format(", `body` = '%s'", articleReply.getBody()));
+		sb.append(String.format(", memberId = '%d'", articleReply.getMemberId()));
+		sb.append(String.format(", articleId = '%d'", articleReply.getArticleId()));
+		dbConn.insert(sb.toString());
+	}
+
+	public List<ArticleReply> articleReplyList(int id) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.format("SELECT * "));
+		sb.append(String.format("FROM ArticleReply "));
+		sb.append(String.format("WHERE articleId = '%d'", id));
+		sb.append(String.format("ORDER by id DESC"));
+		// String sql = "SELECT * FROM Article ORDER by id DESC";
+		List<Map<String, Object>> rows = dbConn.selectRows(sb.toString());
+		List<ArticleReply> articleReplys = new ArrayList<>();
+
+		for (Map<String, Object> row : rows) {
+			articleReplys.add(new ArticleReply(row));
+		}
+
+		return articleReplys;
+	}
+
+	public ArticleReply getArticleReply(int id) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.format("SELECT * "));
+		sb.append(String.format("FROM ArticleReply "));
+		sb.append(String.format("WHERE id = %d", id));
+		Map<String, Object> row = dbConn.selectRow(sb.toString());
+		if (row.isEmpty()) {
+			ArticleReply articleReply = null;
+			return articleReply;
+		}
+		ArticleReply articleReply = new ArticleReply(row);
+		return articleReply;
+	}
+
+	public void articleReplymodify(ArticleReply articleReply) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.format("UPDATE ArticleReply "));
+		sb.append(String.format("SET `body` = '%s'", articleReply.getBody()));
+		sb.append(String.format(" WHERE id = %d", articleReply.getId()));
+		dbConn.update(sb.toString());
+	}
+
+	public void deleteArticleReply(int id) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.format("DELETE FROM ArticleReply "));
+		sb.append(String.format("WHERE id = '%d'", id));
+		dbConn.deleteRow(sb.toString());
+	}
 }

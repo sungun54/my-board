@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sbs.example.demo.dto.Article;
+import com.sbs.example.demo.dto.ArticleReply;
 import com.sbs.example.demo.dto.Board;
 import com.sbs.example.demo.factory.Factory;
 import com.sbs.example.demo.service.ArticleService;
@@ -81,7 +82,97 @@ public class ArticleController extends Controller {
 				return;
 			}
 			actionCurrentBoard(request);
+		} else if (request.getActionName().equals("replyWrite")) {
+			if (Factory.getSession().getLoginedMember() == null) {
+				System.out.println("로그인 후 이용해주세요.");
+				return;
+			}
+			actionReplyWrite(request);
+		} else if (request.getActionName().equals("replyModify")) {
+			if (Factory.getSession().getLoginedMember() == null) {
+				System.out.println("로그인 후 이용해주세요.");
+				return;
+			}
+			actionReplyModify(request);
+		} else if (request.getActionName().equals("replyDelete")) {
+			if (Factory.getSession().getLoginedMember() == null) {
+				System.out.println("로그인 후 이용해주세요.");
+				return;
+			}
+			actionReplyDelete(request);
 		}
+	}
+
+	private void actionReplyDelete(Request request) {
+		if(request.getArg1() == null) {
+			System.out.println("댓글을 삭제하실 댓글 번호를 입력해주세요.");
+			return;
+		}
+		ArticleReply articleReply = Factory.getArticleService().getArticleReply(Integer.parseInt(request.getArg1()));
+		
+		if(articleReply == null) {
+			System.out.println("해당 댓글은 존재하지 않습니다.");
+		}		
+		
+		if (articleReply.getMemberId() != Factory.getSession().getLoginedMember().getId()) {
+			System.out.println("권한이 없습니다.");
+			return;
+		}
+
+		articleService.deleteArticleReply(articleReply.getId());
+		System.out.println(articleReply.getId() + "번 댓글이 삭제 되었습니다.");		
+	}
+
+	private void actionReplyModify(Request request) {
+		if(request.getArg1() == null) {
+			System.out.println("댓글을 수정하실 댓글 번호를 입력해주세요.");
+			return;
+		}
+		ArticleReply articleReply = Factory.getArticleService().getArticleReply(Integer.parseInt(request.getArg1()));
+		if(articleReply == null) {
+			System.out.println("해당 댓글은 존재하지 않습니다.");
+		}		
+		if (articleReply.getMemberId() != Factory.getSession().getLoginedMember().getId()) {
+			System.out.println("권한이 없습니다.");
+			return;
+		}
+		System.out.print("댓글내용 : ");
+		String body = Factory.getScanner().nextLine();
+
+		articleReply.setBody(body);
+		articleService.articleReplymodify(articleReply);
+		System.out.println(articleReply.getId() + "번 댓글이 수정되었습니다.");
+		
+	}
+
+	private void actionReplyWrite(Request request) {
+		if(request.getArg1() == null) {
+			System.out.println("댓글을 작성하실 게시물 번호를 입력해주세요.");
+			return;
+		}
+		Article article = Factory.getArticleService().getArticle(Integer.parseInt(request.getArg1()));
+		if(article == null) {
+			System.out.println("해당 게시물은 존재하지 않습니다.");
+		}
+		String body;
+		while (true) {
+			System.out.printf("댓글 작성 : ");
+			body = Factory.getScanner().nextLine();
+
+			if (body.length() < 2) {
+				System.out.println("두 글자 이상 입력해주세요.");
+				continue;
+			}
+			break;
+		}
+
+		// 현재 게시판 id 가져오기
+		int boardId = Factory.getSession().getCurrentBoard().getId();
+
+		// 현재 로그인한 회원의 id 가져오기
+		int memberId = Factory.getSession().getLoginedMember().getId();
+		articleService.replyWrite(memberId, article.getId(), body);
+		System.out.printf("%d번 글의 댓글이 작성되었습니다.\n", article.getId());
 	}
 
 	private void actionListArticle(Request request) {
@@ -273,18 +364,35 @@ public class ArticleController extends Controller {
 			System.out.println("해당 게시물은 존재하지 않습니다.");
 			return;
 		}
-
-		System.out.println("==========================================================");
-		System.out.printf("번호 : %d%n", article.getId());
-		System.out.printf("날짜 : %s%n", article.getRegDate());
-		System.out.printf("제목 : %s%n", article.getTitle());
-		System.out.printf("내용 : %s%n", article.getBody());
-		System.out.printf("작성자 : %s%n", articleService.getMemberName(article.getMemberId()));
-		System.out.printf("조회수 : %d%n", article.getHit());
-		System.out.println("==========================================================");
-		
-		article.setHit(article.getHit()+1);
-		articleService.modifyHit(article);
+		List<ArticleReply> articleReplys = articleService.getArticleReplyList(article.getId());	
+		if(request.getArg2() == null ){		
+			System.out.println("==========================================================");
+			System.out.printf("번호 : %d%n", article.getId());
+			System.out.printf("날짜 : %s%n", article.getRegDate());
+			System.out.printf("제목 : %s%n", article.getTitle());
+			System.out.printf("내용 : %s%n", article.getBody());
+			System.out.printf("작성자 : %s%n", articleService.getMemberName(article.getMemberId()));
+			System.out.printf("조회수 : %d%n", article.getHit());
+			System.out.println("==========================================================");
+			System.out.println("전체 댓글 수 : " + articleReplys.size());
+			System.out.println("=== 댓글 리스트 ===");
+			if(articleReplys.size() == 0) {
+				System.out.println("작성된 댓글이 없습니다.");
+			}
+			for(ArticleReply articleReply : articleReplys) {
+				System.out.printf("Name : %s, body : %s, regDate%n", articleService.getMemberName(articleReply.getMemberId()), articleReply.getBody(), articleReply.getRegDate());
+			}
+			article.setHit(article.getHit()+1);
+			articleService.modifyHit(article);
+		} 
+		else if(request.getArg2().equals("reply")) {
+			if(articleReplys.size() == 0) {
+				System.out.println("작성된 댓글이 없습니다.");
+			}
+			for(ArticleReply articleReply : articleReplys) {
+				System.out.printf("Name : %s, body : %s, regDate%n", articleService.getMemberName(articleReply.getMemberId()), articleReply.getBody(), articleReply.getRegDate());
+			}
+		}
 	}
 
 	private void actionModify(Request request) {
